@@ -35,6 +35,6 @@ pruning_limit = 100
 [bitcored]
 bitcored_host = localhost
 bitcored_port = 8556
-# user and password from bitcoin.conf (not needed for localhost)
+# user and password from bitcore.conf (not needed for localhost)
 #bitcored_user =
 #bitcored_password =

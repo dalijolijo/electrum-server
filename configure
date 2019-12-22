@@ -110,13 +110,13 @@ chown $user:$user $logfile
 
 bitcored_user=$(read_config "bitcored_user")
 if ! [ "$bitcored_user" ]; then
-    read -p "rpcuser (from your bitcoin.conf file, leave empty for localhost): " -r
+    read -p "rpcuser (from your bitcore.conf file, leave empty for localhost): " -r
     write_config "bitcored_user" $REPLY
 fi
 
 bitcored_password=$(read_config "bitcored_password")
 if ! [ "$bitcored_password" ]; then
-    read -p "rpcpassword (from your bitcoin.conf file, leave emtpy for localhost): " -r
+    read -p "rpcpassword (from your bitcore.conf file, leave emtpy for localhost): " -r
     write_config "bitcored_password" $REPLY
 fi
 

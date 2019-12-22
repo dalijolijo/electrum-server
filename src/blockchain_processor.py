@@ -575,7 +575,7 @@ class BlockchainProcessor(Processor):
                     #  it's considered an error message
                     message = error["message"]
                     if "non-mandatory-script-verify-flag" in message:
-                        result = "Your client produced a transaction that is not accepted by the Bitcoin network any more. Please upgrade to Electrum 2.5.1 or newer\n"
+                        result = "Your client produced a transaction that is not accepted by the Bitcore network any more. Please upgrade to Electrum 2.5.1 or newer\n"
                     else:
                         result = "The transaction was rejected by network rules.(" + message + ")\n" \
                             "[" + params[0] + "]"

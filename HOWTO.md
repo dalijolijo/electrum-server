@@ -26,8 +26,8 @@ Conventions
 In this document, lines starting with a hash sign (#) or a dollar sign ($)
 contain commands. Commands starting with a hash should be run as root,
 commands starting with a dollar should be run as a normal user (in this
-document, we assume that user is called 'bitcoin'). We also assume the
-bitcoin user has sudo rights, so we use `$ sudo command` when we need to.
+document, we assume that user is called 'bitcore). We also assume the
+bitcore user has sudo rights, so we use `$ sudo command` when we need to.
 
 Strings that are surrounded by "lower than" and "greater than" ( < and > )
 should be replaced by the user with something appropriate. For example,
@@ -85,13 +85,13 @@ We will also use the `~/bin` directory to keep locally installed files
 (others might want to use `/usr/local/bin` instead). We will download source
 code files to the `~/src` directory.
 
-    $ sudo adduser bitcoin --disabled-password
+    $ sudo adduser bitcore --disabled-password
     $ sudo apt-get install git
-    $ sudo su - bitcoin
+    $ sudo su - bitcore
     $ mkdir ~/bin ~/src
     $ echo $PATH
 
-If you don't see `/home/bitcoin/bin` in the output, you should add this line
+If you don't see `/home/bitcore/bin` in the output, you should add this line
 to your `.bashrc`, `.profile`, or `.bash_profile`, then logout and relogin:
 
     PATH="$HOME/bin:$PATH"
@@ -99,19 +99,21 @@ to your `.bashrc`, `.profile`, or `.bash_profile`, then logout and relogin:
 
 ### Step 2. Download bitcored
 
-We currently recommend bitcoin core 0.15.1 stable. If your package manager does not supply
+We currently recommend bitcore core 0.15.2.2 stable. If your package manager does not supply
 a recent bitcored or you prefer to compile it yourself, here are some pointers for Ubuntu:
 
     $ sudo apt-get install make bsdmainutils g++ python-leveldb libboost-all-dev libssl-dev libdb++-dev pkg-config libevent-dev
-    $ sudo su - bitcoin
-    $ cd ~/src && wget https://bitcoin.org/bin/bitcoin-core-0.15.1/bitcoin-0.15.1.tar.gz
-    $ sha256sum bitcoin-0.15.1.tar.gz | grep 34de2dbe058c1f8b6464494468ebe2ff0422614203d292da1c6458d6f87342b4
-    $ tar xfz bitcoin-0.15.1.tar.gz
-    $ cd bitcoin-0.15.1
-    $ ./configure --disable-wallet --without-miniupnpc
+    $ sudo su - bitcore
+    $ cd ~/src && wget https://github.com/LIMXTEC/BitCore/archive/0.15.2.2.tar.gz
+tar xzf 0.15.2.2.tar.gz
+    $ sha256sum 0.15.2.2.tar.gz | grep 5d843ba542e71f03a77cac7245d0dd905fcb0be898df321c24fc4739cdeb37ae
+    $ tar xfz 0.15.2.2.tar.gz
+    $ cd BitCore-0.15.2.2
+    $ ./autogen.sh
+    $ ./configure --disable-wallet --without-miniupnpc --disable-tests --disable-bench
     $ make
-    $ strip src/bitcored src/bitcoin-cli src/bitcoin-tx
-    $ cp -a src/bitcored src/bitcoin-cli src/bitcoin-tx ~/bin
+    $ strip bitcored bitcore-cli bitcore-tx
+    $ cp -a bitcored bitcore-cli bitcore-tx ~/bin
 
 ### Step 3. Configure and start bitcored
 
@@ -119,10 +121,10 @@ In order to allow Electrum to "talk" to `bitcored`, we need to set up an RPC
 username and password for `bitcored`. We will then start `bitcored` and
 wait for it to complete downloading the blockchain.
 
-    $ mkdir ~/.bitcoin
-    $ $EDITOR ~/.bitcoin/bitcoin.conf
+    $ mkdir ~/.bitcore
+    $ $EDITOR ~/.bitcore/bitcore.conf
 
-Write this in `bitcoin.conf`:
+Write this in `bitcore.conf`:
 
     daemon=1
     txindex=1
@@ -143,12 +145,12 @@ If you already have a freshly indexed copy of the blockchain with txindex start 
 Allow some time to pass for `bitcored` to connect to the network and start
 downloading blocks. You can check its progress by running:
 
-    $ bitcoin-cli getblockchaininfo
+    $ bitcore-cli getblockchaininfo
 
 Before starting the Electrum server your bitcored should have processed all
 blocks and caught up to the current height of the network (not just the headers).
 You should also set up your system to automatically start bitcored at boot
-time, running as the 'bitcoin' user. Check your system documentation to
+time, running as the 'bitcore' user. Check your system documentation to
 find out the best way to do this.
 
 ### Step 4. Download and install Electrum server
@@ -295,11 +297,11 @@ file handles for each connection made to the server. It's good practice to incre
 open files limit to 128k.
 
 The "configure" script will take care of this and ask you to create a user for running electrum-server.
-If you're using the user `bitcoin` to run electrum and have added it as shown in this document, run
+If you're using the user `bitcore` to run electrum and have added it as shown in this document, run
 the following code to add the limits to your /etc/security/limits.conf:
 
-     echo "bitcoin hard nofile 131072" >> /etc/security/limits.conf
-     echo "bitcoin soft nofile 131072" >> /etc/security/limits.conf
+     echo "bitcore hard nofile 131072" >> /etc/security/limits.conf
+     echo "bitcore soft nofile 131072" >> /etc/security/limits.conf
 
 If you are on Debian > 8.0 Jessie or another distribution based on it, you also need to add these lines in /etc/pam.d/common-session and /etc/pam.d/common-session-noninteractive otherwise the limits in /etc/security/limits.conf will not work:
 
@@ -308,12 +310,12 @@ If you are on Debian > 8.0 Jessie or another distribution based on it, you also 
 
 Check if the limits are changed either by logging with the user configured to run Electrum server as. Example:
 
-    su - bitcoin
+    su - bitcore
     ulimit -n
 
 Or if you use sudo and the user is added to sudoers group:
 
-    sudo -u bitcoin -i ulimit -n
+    sudo -u bitcore -i ulimit -n
 
 
 Two more things for you to consider:
@@ -367,7 +369,7 @@ or hostname and the port. Press 'Ok' and the client will disconnect from the
 current server and connect to your new Electrum server. You should see your
 addresses and transactions history. You can see the number of blocks and
 response time in the server selection window. You should send/receive some
-bitcoins to confirm that everything is working properly.
+bitcores to confirm that everything is working properly.
 
 ### Step 13. Join us on IRC, subscribe to the server thread
 
