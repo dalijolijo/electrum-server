@@ -161,7 +161,7 @@ We will download the latest git snapshot for Bitcore Electrum to configure and i
     $ cd electrum-server
     $ sudo apt-get install python-setuptools
     $ sudo ./configure
-    $ sudo python setup.py install
+    $ sudo python setup.py install #if setup not sucessful, check dependencies in Step5
 
 See the INSTALL file for more information about the configure and install commands.
 
@@ -172,7 +172,9 @@ installed by calling `python setup.py install` above. They can be also be instal
 package manager if you don't want to use the install routine.
 
     $ sudo apt-get install python-setuptools python-openssl python-leveldb libleveldb-dev
-    $ sudo easy_install jsonrpclib irc plyvel
+    $ sudo easy_install jsonrpclib irc plyvel zipp
+    $ #optional: 
+    $ sudo pip install jaraco.functools configparser --upgrade
 
 For the python irc module please note electrum-server currently only supports versions between 11 and 14.0. 
 The setup.py takes care of installing a supported version but be aware of it when installing or upgrading
