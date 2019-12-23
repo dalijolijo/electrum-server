@@ -4,14 +4,14 @@ Note
 This code is now unmaintained. The replacement code for electrum
 server is ElectrumX: https://github.com/kyuupichan/electrumx
 
-How to run your own Electrum server
-===================================
+How to run your own Bitcore Electrum Server
+===========================================
 
 Abstract
 --------
 
 This document is an easy to follow guide to installing and running your own
-Electrum server on Linux. It is structured as a series of steps you need to
+Bitcore Electrum Server on Linux. It is structured as a series of steps you need to
 follow, ordered in the most logical way. The next two sections describe some
 conventions we use in this document and the hardware, software, and expertise
 requirements.
@@ -77,7 +77,7 @@ SSD for good i/o speed.
 Instructions
 ------------
 
-### Step 1. Create a user for running bitcored and Electrum server
+### Step 1. Create a user for running bitcored and Bitcore Electrum Server
 
 This step is optional, but for better security and resource separation I
 suggest you create a separate user just for running `bitcored` and Electrum.
@@ -147,18 +147,18 @@ downloading blocks. You can check its progress by running:
 
     $ bitcore-cli getblockchaininfo
 
-Before starting the Electrum server your bitcored should have processed all
+Before starting the Bitcore Electrum Server your bitcored should have processed all
 blocks and caught up to the current height of the network (not just the headers).
 You should also set up your system to automatically start bitcored at boot
 time, running as the 'bitcore' user. Check your system documentation to
 find out the best way to do this.
 
-### Step 4. Download and install Electrum server
+### Step 4. Download and install Bitcore Electrum Server
 
-We will download the latest git snapshot for Electrum to configure and install it:
+We will download the latest git snapshot for Bitcore Electrum to configure and install it:
 
     $ cd ~
-    $ git clone https://github.com/spesmilo/electrum-server.git
+    $ git clone https://github.com/dalijolijo/electrum-server.git 
     $ cd electrum-server
     $ sudo apt-get install python-setuptools
     $ sudo ./configure
@@ -168,7 +168,7 @@ See the INSTALL file for more information about the configure and install comman
 
 ### Optional Step 5: Install Electrum dependencies manually
 
-Electrum server depends on various standard Python libraries and leveldb. These will usually be
+Bitcore Electrum Server depends on various standard Python libraries and leveldb. These will usually be
 installed by calling `python setup.py install` above. They can be also be installed with your
 package manager if you don't want to use the install routine.
 
@@ -186,7 +186,7 @@ leveldb should be at least version 1.9.0. Earlier version are believed to be bug
 
 ### Step 6. Select your limit
 
-Electrum server uses leveldb to store transactions. You can choose
+Bitcore Electrum Server uses leveldb to store transactions. You can choose
 how many spent transactions per address you want to store on the server.
 The default is 100, but there are also servers with 1000 or even 10000.
 Few addresses have more than 10000 transactions. A limit this high
@@ -267,7 +267,7 @@ When asked for a challenge password just leave it empty and press enter.
     $ openssl x509 -req -days 1825 -in server.csr -signkey server.key -out server.crt
 
 The server.crt file is your certificate suitable for the `ssl_certfile=` parameter and
-server.key corresponds to `ssl_keyfile=` in your Electrum server config.
+server.key corresponds to `ssl_keyfile=` in your Bitcore Electrum Server config.
 
 Starting with Electrum 1.9, the client will learn and locally cache the SSL certificate
 for your server upon the first request to prevent man-in-the middle attacks for all
@@ -278,7 +278,7 @@ your server with a different server name and a new certificate.
 Therefore it's a good idea to make an offline backup copy of your certificate and key
 in case you need to restore them.
 
-### Step 9. Configure Electrum server
+### Step 9. Configure Bitcore Electrum Server
 
 Electrum reads a config file (/etc/electrum.conf) when starting up. This
 file includes the database setup, bitcored RPC setup, and a few other
@@ -292,7 +292,7 @@ If you intend to run the server publicly have a look at README-IRC.md
 
 ### Step 10. Tweak your system for running electrum
 
-Electrum server currently needs quite a few file handles to use leveldb. It also requires
+Bitcore Electrum Server currently needs quite a few file handles to use leveldb. It also requires
 file handles for each connection made to the server. It's good practice to increase the
 open files limit to 128k.
 
@@ -308,7 +308,7 @@ If you are on Debian > 8.0 Jessie or another distribution based on it, you also 
     echo "session required pam_limits.so" >> /etc/pam.d/common-session
     echo "session required pam_limits.so" >> /etc/pam.d/common-session-noninteractive
 
-Check if the limits are changed either by logging with the user configured to run Electrum server as. Example:
+Check if the limits are changed either by logging with the user configured to run Bitcore Electrum Server as. Example:
 
     su - bitcore
     ulimit -n
@@ -327,9 +327,9 @@ Two more things for you to consider:
 2. Consider restarting bitcored (together with electrum-server) on a weekly basis to clear out unconfirmed
    transactions from the local the memory pool which did not propagate over the network.
 
-### Step 11. (Finally!) Run Electrum server
+### Step 11. (Finally!) Run Bitcore Electrum Server
 
-The magic moment has come: you can now start your Electrum server as root (it will su to your unprivileged user):
+The magic moment has come: you can now start your Bitcore Electrum Server as root (it will su to your unprivileged user):
 
     # electrum-server start
 
@@ -338,15 +338,15 @@ unprivileged user.
 
 You should see this in the log file:
 
-    starting Electrum server
+    starting Bitcore Electrum Server
 
-If your blockchain database is out of date Electrum Server will start updating it. You will see something similar to this in the log file:
+If your blockchain database is out of date Bitcore Electrum Server will start updating it. You will see something similar to this in the log file:
 
     [09/02/2016-09:58:18] block 397319 (1727 197.37s) 0290aae5dc6395e2c60e8b2c9e48a7ee246cad7d0630d17dd5b54d70a41ffed7 (10.13tx/s, 139.78s/block) (eta 11.5 hours, 240 blocks)
     
 The important pieces to you are at the end. In this example, the server has to calculate 240 more blocks, with an ETA of 11.5 hours. Multiple entries will appear below this one as the server catches back up to the latest block. During this time the server will not accept incoming connections from clients or connect to the IRC channel.
 
-If you want to stop Electrum server, use the 'stop' command:
+If you want to stop Bitcore Electrum Server, use the 'stop' command:
 
     # electrum-server stop
 
@@ -358,7 +358,7 @@ safely whenever your machine is rebooted.
     # ln -s `which electrum-server` /etc/init.d/electrum-server
     # update-rc.d electrum-server defaults
 
-### Step 12. Test the Electrum server
+### Step 12. Test the Bitcore Electrum Server
 
 We will assume you have a working Electrum client, a wallet, and some
 transaction history. You should start the client and click on the green
@@ -366,7 +366,7 @@ checkmark (last button on the right of the status bar) to open the Server
 selection window. If your server is public, you should see it in the list
 and you can select it. If you server is private, you need to enter its IP
 or hostname and the port. Press 'Ok' and the client will disconnect from the
-current server and connect to your new Electrum server. You should see your
+current server and connect to your new Bitcore Electrum Server. You should see your
 addresses and transactions history. You can see the number of blocks and
 response time in the server selection window. You should send/receive some
 bitcores to confirm that everything is working properly.
@@ -377,7 +377,7 @@ Say hi to the dev crew, other server operators, and fans on
 irc.freenode.net #electrum and we'll try to congratulate you
 on supporting the community by running an Electrum node.
 
-If you're operating a public Electrum server please subscribe
+If you're operating a public Bitcore Electrum Server please subscribe
 to or regularly check the following thread:
 https://bitcointalk.org/index.php?topic=85475.0
 It'll contain announcements about important updates to Electrum

@@ -236,7 +236,7 @@ def start_server(config):
     if ssl_certfile is '' or ssl_keyfile is '':
         stratum_tcp_ssl_port = None
 
-    print_log("Starting Electrum server on", host)
+    print_log("Starting Bitcore Electrum Server on", host)
 
     # Create hub
     dispatcher = Dispatcher(config)
@@ -274,7 +274,7 @@ def stop_server():
     shared.stop()
     server_proc.join()
     chain_proc.join()
-    print_log("Electrum Server stopped")
+    print_log("Bitcore Electrum Server stopped")
 
 
 if __name__ == '__main__':

@@ -1,9 +1,9 @@
-IRC is used by Electrum server to find 'peers' - other Electrum servers. The
+IRC is used by Bitcore Electrum Server to find 'peers' - other Bitcore Electrum Servers. The
 current list can be seen by running:
 
   electrum-server peers
 
-The following config file options are used by the IRC part of Electrum server:
+The following config file options are used by the IRC part of Bitcore Electrum Server:
 
     [server]
     irc = yes
@@ -13,7 +13,7 @@ The following config file options are used by the IRC part of Electrum server:
     # report_stratum_tcp_port = 50001
 
 `irc` is used to determine whether the IRC thread will be started or
-the Electrum server will run in private mode (default). In private
+the Bitcore Electrum Server will run in private mode (default). In private
 mode, `electrum-server peers` will always return an empty list.
 
 `host` is a fully-qualified domain name (FQDN) of your Electrum
@@ -21,7 +21,7 @@ server. It is used both when binding the listener for incoming client
 connections and as part of the realname field in IRC (see below).
 
 `report_host` is a an optional fully-qualified domain name (FQDN) of
-your Electrum server instead of `host`. It is used as part of the name
+your Bitcore Electrum Server instead of `host`. It is used as part of the name
 field in IRC for incoming client connections.  This is useful in a NAT
 setup where you bind to a private IP locally but have an external IP
 set up at your router and external DNS.
