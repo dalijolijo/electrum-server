@@ -38,7 +38,7 @@ Lines that lack hash or dollar signs are pastes from config files. They
 should be copied verbatim or adapted without the indentation tab.
 
 `apt-get install` commands are suggestions for required dependencies.
-They conform to an Ubuntu 15.10 system but may well work with Debian
+They conform to an Ubuntu 16.04 system but may well work with Debian
 or other versions of Ubuntu.
 
 Prerequisites
@@ -102,12 +102,11 @@ to your `.bashrc`, `.profile`, or `.bash_profile`, then logout and relogin:
 We currently recommend bitcore core 0.15.2.2 stable. If your package manager does not supply
 a recent bitcored or you prefer to compile it yourself, here are some pointers for Ubuntu:
 
-    $ sudo apt-get install make bsdmainutils g++ python-leveldb libboost-all-dev libssl-dev libdb++-dev pkg-config libevent-dev
+    $ sudo apt-get install autoconf make bsdmainutils g++ python-leveldb libboost-all-dev libssl-dev libdb++-dev pkg-config libevent-dev
     $ sudo su - bitcore
     $ cd ~/src && wget https://github.com/LIMXTEC/BitCore/archive/0.15.2.2.tar.gz
-tar xzf 0.15.2.2.tar.gz
+    $ tar xzf 0.15.2.2.tar.gz
     $ sha256sum 0.15.2.2.tar.gz | grep 5d843ba542e71f03a77cac7245d0dd905fcb0be898df321c24fc4739cdeb37ae
-    $ tar xfz 0.15.2.2.tar.gz
     $ cd BitCore-0.15.2.2
     $ ./autogen.sh
     $ ./configure --disable-wallet --without-miniupnpc --disable-tests --disable-bench
@@ -122,7 +121,7 @@ username and password for `bitcored`. We will then start `bitcored` and
 wait for it to complete downloading the blockchain.
 
     $ mkdir ~/.bitcore
-    $ $EDITOR ~/.bitcore/bitcore.conf
+    $ vi ~/.bitcore/bitcore.conf
 
 Write this in `bitcore.conf`:
 
