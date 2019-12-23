@@ -112,8 +112,8 @@ tar xzf 0.15.2.2.tar.gz
     $ ./autogen.sh
     $ ./configure --disable-wallet --without-miniupnpc --disable-tests --disable-bench
     $ make
-    $ strip bitcored bitcore-cli bitcore-tx
-    $ cp -a bitcored bitcore-cli bitcore-tx ~/bin
+    $ strip src/bitcored src/bitcore-cli src/bitcore-tx
+    $ cp -a src/bitcored src/bitcore-cli src/bitcore-tx ~/bin
 
 ### Step 3. Configure and start bitcored
 
