@@ -30,14 +30,21 @@ import time
 import threading
 import json
 import os
-#import imp
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore",category=DeprecationWarning)
-    import imp
+import importlib.util
+import sys
 
 if os.path.dirname(os.path.realpath(__file__)) == os.getcwd():
-    imp.load_module('electrumserver', *imp.find_module('src'))
+    name = 'electrumserver'
+    spec = importlib.util.find_spec(name)
+    if name in sys.modules:
+        print(f"{name!r} already in sys.modules")
+    elif (spec) is not None:
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        #spec.loader.exec_module(module)
+        print(f"{name!r} has been imported")
+    else:
+        print(f"can't find the {name!r} module")
 
 from electrumserver import storage, networks, utils
 from electrumserver.processor import Dispatcher, print_log
