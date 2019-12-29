@@ -1,0 +1,27 @@
+FROM ubuntu:16.04
+LABEL maintainer="LIMXTEC developer"
+
+COPY ./bin /usr/local/bin
+
+RUN chmod a+x /usr/local/bin/* && \
+    apt-get update
+RUN apt-get install -y --no-install-recommends wget ca-certificates tar software-properties-common python-setuptools
+    apt-get -y autoremove && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+VOLUME ["/data"]
+ENV HOME /data
+ENV DATA /data
+WORKDIR /data
+
+RUN cd $WORKDIR && \
+    git clone https://github.com/dalijolijo/electrum-server.git . && \
+    ./configure && \
+    python setup.py install
+
+RUN mkdir ${WORKDIR}/leveldb
+COPY electrum.conf $WORKDIR
+
+EXPOSE 8000 50001 50002
+
+ENTRYPOINT ["init"]
