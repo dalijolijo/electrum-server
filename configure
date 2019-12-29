@@ -80,9 +80,9 @@ fi
 
 
 # remove directory if it exists and is empty
-if [ -d $path ]; then
-    rmdir $path --ignore-fail-on-non-empty
-fi
+#if [ -d $path ]; then
+#    rmdir $path --ignore-fail-on-non-empty
+#fi
 
 
 # download database
