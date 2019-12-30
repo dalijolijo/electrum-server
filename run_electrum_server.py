@@ -41,9 +41,9 @@ if os.path.dirname(os.path.realpath(__file__)) == os.getcwd():
         module = importlib.util.module_from_spec(spec)
         sys.modules[name] = module
         #spec.loader.exec_module(module)
-        print(f"{name!r} has been imported")
+        print("{name} has been imported")
     else:
-        print(f"can't find the {name!r} module")
+        print("can't find the {name} module")
 
 from electrumserver import storage, networks, utils
 from electrumserver.processor import Dispatcher, print_log
