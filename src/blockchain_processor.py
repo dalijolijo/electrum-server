@@ -568,7 +568,7 @@ class BlockchainProcessor(Processor):
                 txo = self.bitcored('sendrawtransaction', params)
                 print_log("sent tx:", txo)
                 result = txo
-            except BaseException, e:
+            except BaseException as e:
                 error = e.args[0]
                 if error["code"] == -26:
                     # If we return anything that's not the transaction hash,
@@ -667,7 +667,7 @@ class BlockchainProcessor(Processor):
             self.up_to_date = False
             try:
                 next_block_hash = self.bitcored('getblockhash', (self.storage.height + 1,))
-            except BaseException, e:
+            except BaseException as e:
                 revert = True
 
             next_block = self.get_block(next_block_hash if not revert else self.storage.last_hash)
