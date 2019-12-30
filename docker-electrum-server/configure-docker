@@ -1,0 +1,86 @@
+#!/bin/bash
+set -e
+
+# check root
+if [ ! "$(id -u)" == "0" ]; then
+    echo "must be root to run install script"
+    exit 1
+fi
+
+# source directory
+source_dir=$(cd "$(dirname "${BASH_SOURCE[0]}" )"; pwd)
+
+electrum_config="/etc/electrum.conf"
+function read_config()
+{
+    text=$1
+    echo `grep -e ^$text $electrum_config |awk -F\= '{print $2}' | tail -n 1| tr -d ' '`
+}
+
+function write_config()
+{
+    sed -i -s "s#$1 =.*#$1 = $2#" $electrum_config
+}
+
+# create config file
+if [ ! -f $electrum_config ]; then
+    echo "Creating config file"
+    cp $source_dir"/electrum.conf" $electrum_config
+fi
+
+# read username
+user="electrum"
+
+# create user
+if [ ! id -u $user >/dev/null 2>&1 ]; then
+    echo "adding user $user"
+    useradd $user
+fi
+
+# It also requires file handles for each connection made to the server. It's good practice to increase the open files limit to 128k.
+echo "$user hard nofile 131072" >> /etc/security/limits.conf
+echo "$user soft nofile 131072" >> /etc/security/limits.conf
+
+# read path from config
+default_path="/data/leveldb"
+path=$(read_config "path")
+if ! [ "$path" ]; then
+    path=$default_path
+    write_config "path" $default_path
+fi
+
+# read path from config
+default_logfile="/var/log/electrum.log"
+logfile=$(read_config "logfile")
+if ! [ "$logfile" ]; then
+    logfile=$default_logfile
+    write_config "logfile" $default_logfile
+fi
+
+# download database
+#if [ ! -d $path ]; then
+#    echo "Database not found in $path."
+#    read -p "Do you want to download it from the Electrum foundry to $path ? " -n 1 -r
+#    echo
+#    if [[ $REPLY =~ ^[Yy]$ ]]; then
+#	mkdir -p $path
+#	wget -O - "http://foundry.electrum.org/leveldb-dump/electrum-fulltree-100-latest.tar.gz" | tar --extract --gunzip --strip-components 1 --directory $path --file -
+#    fi
+#fi
+
+# set owner for leveldb path
+chown -R $user:$user $path
+
+# create log file
+logfile=$(read_config "logfile")
+if ! [ -f $logfile ]; then
+    touch $logfile
+fi
+chown $user:$user $logfile
+
+
+# finish
+echo "Configuration written to $electrum_config."
+echo "Please edit this file to finish the configuration."
+echo "If you have not done so, please run 'python setup.py install'"
+echo "Then, run 'electrum-server' to start the daemon"

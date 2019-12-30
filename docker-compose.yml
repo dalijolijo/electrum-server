@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  bitcored:
+    build:
+      context: ./docker-bitcored
+      dockerfile: ./Dockerfile.bitcored
+    image: bitcored
+    container_name: bitcored
+    command:
+      -whitebind=172.21.0.10:8555
+      -whitelist=172.21.0.0/24
+      -whitelist=127.0.0.1
+      -txindex=1
+      -maxconnections=100
+      -rpcbind=172.21.0.10
+      -rpcallowip=172.21.0.0/24
+      -rpcallowip=127.0.0.1
+      -port=8555
+      -rpcport=8556
+      -rpcuser=btx 
+      -rpcpassword=btx
+    restart: always
+    networks:
+      electrum-net:
+        ipv4_address: 172.21.0.10
+    ports:
+      - 8555:8555 
+    expose:
+      - 8555
+      - 8556 
+    volumes:
+      - /home/bitcore:/data
+
+  electrum-server:
+    build:
+      context: ./docker-electrum-server
+      dockerfile: ./Dockerfile.electrum-server
+    image: electrum-server 
+    container_name: electrum-server
+    restart: always
+    networks:
+      electrum-net:
+        ipv4_address: 172.21.0.13
+    ports:
+      - 50001:50001
+      - 50002:50002
+    expose:
+      - 8000 #electrum_rpc_port
+      - 50001 #stratum_tcp_port
+      - 50002 #stratum_tcp_ssl_port
+   #environment:
+      #- "BITCORE_CONFIG_PATH=/bitcore/bitcore.config.json"
+    depends_on:
+      - bitcored
+
+networks:
+  electrum-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
