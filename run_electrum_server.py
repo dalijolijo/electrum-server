@@ -31,13 +31,12 @@ import threading
 import json
 import os
 import importlib.util
-import sys
 
 if os.path.dirname(os.path.realpath(__file__)) == os.getcwd():
     name = 'electrumserver'
     spec = importlib.util.find_spec(name)
     if name in sys.modules:
-        print(f"{name!r} already in sys.modules")
+        print("{name} already in sys.modules")
     elif (spec) is not None:
         module = importlib.util.module_from_spec(spec)
         sys.modules[name] = module
