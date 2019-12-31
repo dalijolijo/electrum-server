@@ -6,12 +6,10 @@
 CONF=${DATA}/bitcore.conf
 
 if [ ! -e "${CONF}" ]; then
-  echo "txindex=0
+  echo "txindex=1
 listen=1
 server=1
 
-# Make sure port & rpcport matches the
-# bitcore.config.json ports for BTX mainnet
 port=8555
 rpcport=8556
 rpcallowip=0.0.0.0/0
@@ -21,7 +19,6 @@ rpcpassword=btx
 
 printtoconsole=1" > "${CONF}"
 fi
-
 
 #
 # Downloading bootstrap file
