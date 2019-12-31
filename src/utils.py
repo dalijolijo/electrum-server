@@ -26,8 +26,12 @@ import threading
 import time
 import hashlib
 import struct
+from binascii import hexlify, unhexlify
+from codecs import getreader
+from collections import deque
+from itertools import repeat
 
-__b58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+__b58chars = b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 __b58base = len(__b58chars)
 
 global PUBKEY_ADDRESS
@@ -36,16 +40,16 @@ PUBKEY_ADDRESS = 3
 SCRIPT_ADDRESS = 125
 
 def rev_hex(s):
-    return s.decode('hex')[::-1].encode('hex')
+    return hexlify(unhexlify(s)[::-1])
 
 
 Hash = lambda x: hashlib.sha256(hashlib.sha256(x).digest()).digest()
 
 
-hash_encode = lambda x: x[::-1].encode('hex')
+hash_encode = lambda x: hexlify(x[::-1])
 
 
-hash_decode = lambda x: x.decode('hex')[::-1]
+hash_decode = lambda x: unhexlify(x)[::-1]
 
 
 def header_to_string(res):
@@ -78,11 +82,11 @@ int_to_bytes8 = struct.Struct('<Q').pack
 
 
 def int_to_hex4(i):
-    return int_to_bytes4(i).encode('hex')
+    return hexlify(int_to_bytes4(i))
 
 
 def int_to_hex8(i):
-    return int_to_bytes8(i).encode('hex')
+    return hexlify(int_to_bytes8(i))
 
 
 def header_from_string(s):
@@ -95,6 +99,8 @@ def header_from_string(s):
         'nonce': bytes4_to_int(s[76:80]),
     }
 
+
+utf8_reader = getreader("utf-8")
 
 ############ functions from pywallet #####################
 
@@ -140,7 +146,7 @@ def hash_160_to_address(h160, addrtype = 0):
     """
     if h160 is None or len(h160) is not 20:
         return None
-    vh160 = chr(addrtype) + h160
+    vh160 = bytes((addrtype,)) + h160
     h = Hash(vh160)
     addr = vh160 + h[0:4]
     return b58encode(addr)
@@ -157,25 +163,26 @@ def b58encode(v):
 
     long_value = 0
     for (i, c) in enumerate(v[::-1]):
-        long_value += (256**i) * ord(c)
+        long_value += (256**i) * c
 
-    result = ''
+    result = deque()
     while long_value >= __b58base:
         div, mod = divmod(long_value, __b58base)
-        result = __b58chars[mod] + result
+        result.appendleft(__b58chars[mod])
         long_value = div
-    result = __b58chars[long_value] + result
+    result.appendleft(__b58chars[long_value])
 
     # Bitcore does a little leading-zero-compression:
     # leading 0-bytes in the input become leading-1s
     nPad = 0
     for c in v:
-        if c == '\0':
+        if c == 0:
             nPad += 1
         else:
             break
 
-    return (__b58chars[0]*nPad) + result
+    result.extendleft(__b58chars[0:1]*nPad)
+    return bytes(result)
 
 
 def b58decode(v, length):
@@ -184,12 +191,12 @@ def b58decode(v, length):
     for (i, c) in enumerate(v[::-1]):
         long_value += __b58chars.find(c) * (__b58base**i)
 
-    result = ''
+    result = deque()
     while long_value >= 256:
         div, mod = divmod(long_value, 256)
-        result = chr(mod) + result
+        result.appendleft(mod)
         long_value = div
-    result = chr(long_value) + result
+    result.appendleft(long_value)
 
     nPad = 0
     for c in v:
@@ -198,11 +205,11 @@ def b58decode(v, length):
         else:
             break
 
-    result = chr(0)*nPad + result
+    result.extendleft(repeat(0, nPad))
     if length is not None and len(result) != length:
         return None
 
-    return result
+    return bytes(result)
 
 
 def EncodeBase58Check(vchIn):
