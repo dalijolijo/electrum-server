@@ -1,18 +1,8 @@
-[![codecov.io](https://codecov.io/github/bauerj/electrum-server/coverage.svg?branch=python3-migration)](https://codecov.io/github/bauerj/electrum-server?branch=python3-migration)
-[![Build Status](https://travis-ci.org/bauerj/electrum-server.svg?branch=python3-migration)](https://travis-ci.org/bauerj/electrum-server)
-
-Electrum-server for the Electrum client
-=========================================
+Bitcore Electrum-server for the Electrum client
+===============================================
 
   * Author: Thomas Voegtlin (ThomasV on the bitcointalk forum)
   * Language: Python
-
-
-Note
-----
-
-  This code is now unmaintained. The replacement code for electrum
-  server is ElectrumX: https://github.com/kyuupichan/electrumx
 
 
 Features
@@ -41,6 +31,13 @@ Installation
   2. To start and stop the server, use the 'electrum-server' script
 
 
+
+Note
+----
+
+  This code is now unmaintained. The replacement code for electrum
+  server is ElectrumX: https://github.com/kyuupichan/electrumx
+  
 
 License
 -------
