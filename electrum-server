@@ -56,13 +56,22 @@ case "$1" in
 	    chown $user:$user $logfile
 	fi
 
-	echo "Starting server as daemon"
-	cmd="ulimit -n 131072 ; nohup run_electrum_server.py > /dev/null 2>>$logfile &"
-	if [ `id -u` = 0 ] ; then
+	#echo "Starting server as daemon"
+	#cmd="ulimit -n 131072 ; nohup run_electrum_server.py > /dev/null 2>>$logfile &"
+	#if [ `id -u` = 0 ] ; then
+        #    su $user -c "$cmd"
+	#else
+	#    eval $cmd
+	#fi
+
+        echo "Starting server"
+        cmd="ulimit -n 131072 ; run_electrum_server.py"
+        if [ `id -u` = 0 ] ; then
             su $user -c "$cmd"
-	else
-	    eval $cmd
-	fi
+        else
+            eval $cmd
+        fi
+
 	;;
     stop)
 	if [ ! $PID ]; then

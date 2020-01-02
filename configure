@@ -81,7 +81,10 @@ fi
 
 # remove directory if it exists and is empty
 if [ -d $path ]; then
-    rmdir $path --ignore-fail-on-non-empty
+    ls $path
+    #rmdir $path --ignore-fail-on-non-empty
+else
+    mkdir -p $path
 fi
 
 
