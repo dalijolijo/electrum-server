@@ -27,8 +27,7 @@ COPY electrum.conf.docker electrum-server/electrum.conf
 
 RUN cd electrum-server && \
     ./configure
-RUN rm /usr/bin/python && \
-    ln -s python3.5 /usr/bin/python
+RUN if [ -s /usr/bin/python ]; then rm /usr/bin/python; ln -s python3.5 /usr/bin/python; else ln -s python3.5 /usr/bin/python; fi
 RUN cd electrum-server && \
     sudo python setup.py install
 
