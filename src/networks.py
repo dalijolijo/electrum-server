@@ -1,14 +1,14 @@
 # Main network and testnet3 definitions
 
 params = {
-    'bitcore_main': {
-        'pubkey_address': 3,
-        'script_address': 125,
-        'genesis_hash': '604148281e5c4b7f2487e5d03cd60d8e6f69411d613f6448034508cea52e9574'
+    'megacoin_main': {
+        'pubkey_address': 50,
+        'script_address': 5,
+        'genesis_hash': '7520788e2d99eec7cf6cf7315577e1268e177fff94cb0a7caf6a458ceeea9ac2'
     },
-    'bitcore_test': {
-        'pubkey_address': 111,
+    'megacoin_test': {
+        'pubkey_address': 11,
         'script_address': 196,
-        'genesis_hash': '02c5d66e8edb49984eb743c798bca069466ce457b7febfa3c3a01b33353b7bc6'
+        'genesis_hash': '7520788e2d99eec7cf6cf7315577e1268e177fff94cb0a7caf6a458ceeea9ac2'
     }
 }
