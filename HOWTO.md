@@ -4,14 +4,14 @@ Note
 This code is now unmaintained. The replacement code for electrum
 server is ElectrumX: https://github.com/kyuupichan/electrumx
 
-How to run your own Bitcore Electrum Server
+How to run your own Megacoin Electrum Server
 ===========================================
 
 Abstract
 --------
 
 This document is an easy to follow guide to installing and running your own
-Bitcore Electrum Server on Linux. It is structured as a series of steps you need to
+Megacoin Electrum Server on Linux. It is structured as a series of steps you need to
 follow, ordered in the most logical way. The next two sections describe some
 conventions we use in this document and the hardware, software, and expertise
 requirements.
@@ -26,8 +26,8 @@ Conventions
 In this document, lines starting with a hash sign (#) or a dollar sign ($)
 contain commands. Commands starting with a hash should be run as root,
 commands starting with a dollar should be run as a normal user (in this
-document, we assume that user is called 'bitcore). We also assume the
-bitcore user has sudo rights, so we use `$ sudo command` when we need to.
+document, we assume that user is called 'megacoin). We also assume the
+megacoin user has sudo rights, so we use `$ sudo command` when we need to.
 
 Strings that are surrounded by "lower than" and "greater than" ( < and > )
 should be replaced by the user with something appropriate. For example,
@@ -60,16 +60,16 @@ Python libraries. Python 2.7 is the minimum supported version.
 
 **Hardware.** The lightest setup is a pruning server with disk space
 requirements of about 50 GB for the Electrum database (January 2017). However note that
-you also need to run bitcored and keep a copy of the full blockchain,
+you also need to run megacoind and keep a copy of the full blockchain,
 which is roughly 125 GB (January 2017). Ideally you have a machine with 16 GB of RAM
-and an equal amount of swap. If you have ~2 GB of RAM make sure you limit bitcored 
+and an equal amount of swap. If you have ~2 GB of RAM make sure you limit megacoind 
 to 8 concurrent connections by disabling incoming connections. electrum-server may
 bail-out on you from time to time with less than 4 GB of RAM, so you might have to 
 monitor the process and restart it. You can tweak cache sizes in the config to an extend
 but most RAM will be used to process blocks and catch-up on initial start.
 
 CPU speed is less important than fast I/O speed. electrum-server makes use of one core 
-only leaving spare cycles for bitcored. Fast single core CPU power helps for the initial 
+only leaving spare cycles for megacoind. Fast single core CPU power helps for the initial 
 block chain import. Any multi-core x86 CPU with CPU Mark / PassMark > 1500 will work
 (see https://www.cpubenchmark.net/). An ideal setup in February 2016 has 16 GB+ RAM and
 SSD for good i/o speed.
@@ -77,33 +77,33 @@ SSD for good i/o speed.
 Instructions
 ------------
 
-### Step 1. Create a user for running bitcored and Bitcore Electrum Server
+### Step 1. Create a user for running megacoind and Megacoin Electrum Server
 
 This step is optional, but for better security and resource separation I
-suggest you create a separate user just for running `bitcored` and Electrum.
+suggest you create a separate user just for running `megacoind` and Electrum.
 We will also use the `~/bin` directory to keep locally installed files
 (others might want to use `/usr/local/bin` instead). We will download source
 code files to the `~/src` directory.
 
-    $ sudo adduser bitcore --disabled-password
+    $ sudo adduser megacoin --disabled-password
     $ sudo apt-get install git
-    $ sudo su - bitcore
+    $ sudo su - megacoin
     $ mkdir ~/bin ~/src
     $ echo $PATH
 
-If you don't see `/home/bitcore/bin` in the output, you should add this line
+If you don't see `/home/megacoin/bin` in the output, you should add this line
 to your `.bashrc`, `.profile`, or `.bash_profile`, then logout and relogin:
 
     PATH="$HOME/bin:$PATH"
     $ exit
 
-### Step 2. Download bitcored
+### Step 2. Download megacoind
 
-We currently recommend bitcore core 0.15.2.2 stable. If your package manager does not supply
-a recent bitcored or you prefer to compile it yourself, here are some pointers for Ubuntu:
+We currently recommend megacoin core 0.15.2.2 stable. If your package manager does not supply
+a recent megacoind or you prefer to compile it yourself, here are some pointers for Ubuntu:
 
     $ sudo apt-get install autoconf make bsdmainutils g++ python-leveldb libboost-all-dev libssl-dev libdb++-dev pkg-config libevent-dev
-    $ sudo su - bitcore
+    $ sudo su - megacoin
     $ cd ~/src && wget https://github.com/LIMXTEC/BitCore/archive/0.15.2.2.tar.gz
     $ tar xzf 0.15.2.2.tar.gz
     $ sha256sum 0.15.2.2.tar.gz | grep 5d843ba542e71f03a77cac7245d0dd905fcb0be898df321c24fc4739cdeb37ae
@@ -111,50 +111,50 @@ a recent bitcored or you prefer to compile it yourself, here are some pointers f
     $ ./autogen.sh
     $ ./configure --disable-wallet --without-miniupnpc --disable-tests --disable-bench
     $ make
-    $ strip src/bitcored src/bitcore-cli src/bitcore-tx
-    $ cp -a src/bitcored src/bitcore-cli src/bitcore-tx ~/bin
+    $ strip src/megacoind src/megacoin-cli src/megacoin-tx
+    $ cp -a src/megacoind src/megacoin-cli src/megacoin-tx ~/bin
 
-### Step 3. Configure and start bitcored
+### Step 3. Configure and start megacoind
 
-In order to allow Electrum to "talk" to `bitcored`, we need to set up an RPC
-username and password for `bitcored`. We will then start `bitcored` and
+In order to allow Electrum to "talk" to `megacoind`, we need to set up an RPC
+username and password for `megacoind`. We will then start `megacoind` and
 wait for it to complete downloading the blockchain.
 
-    $ mkdir ~/.bitcore
-    $ vi ~/.bitcore/bitcore.conf
+    $ mkdir ~/.megacoin
+    $ vi ~/.megacoin/megacoin.conf
 
-Write this in `bitcore.conf`:
+Write this in `megacoin.conf`:
 
     daemon=1
     txindex=1
 
 rpcuser / rpcpassword options are only needed for non-localhost connections.
-you can consider setting maxconnections if you want to reduce bitcored bandwidth
+you can consider setting maxconnections if you want to reduce megacoind bandwidth
 (as stated above)
 
-If you have an existing installation of bitcored and have not previously
+If you have an existing installation of megacoind and have not previously
 set txindex=1 you need to reindex the blockchain by running
 
-    $ bitcored -reindex
+    $ megacoind -reindex
 
-If you already have a freshly indexed copy of the blockchain with txindex start `bitcored`:
+If you already have a freshly indexed copy of the blockchain with txindex start `megacoind`:
 
-    $ bitcored
+    $ megacoind
 
-Allow some time to pass for `bitcored` to connect to the network and start
+Allow some time to pass for `megacoind` to connect to the network and start
 downloading blocks. You can check its progress by running:
 
-    $ bitcore-cli getblockchaininfo
+    $ megacoin-cli getblockchaininfo
 
-Before starting the Bitcore Electrum Server your bitcored should have processed all
+Before starting the Megacoin Electrum Server your megacoind should have processed all
 blocks and caught up to the current height of the network (not just the headers).
-You should also set up your system to automatically start bitcored at boot
-time, running as the 'bitcore' user. Check your system documentation to
+You should also set up your system to automatically start megacoind at boot
+time, running as the 'megacoin' user. Check your system documentation to
 find out the best way to do this.
 
-### Step 4. Download and install Bitcore Electrum Server
+### Step 4. Download and install Megacoin Electrum Server
 
-We will download the latest git snapshot for Bitcore Electrum to configure and install it:
+We will download the latest git snapshot for Megacoin Electrum to configure and install it:
 
     $ cd ~
     $ git clone https://github.com/dalijolijo/electrum-server.git 
@@ -167,7 +167,7 @@ See the INSTALL file for more information about the configure and install comman
 
 ### Optional Step 5: Install Electrum dependencies manually
 
-Bitcore Electrum Server depends on various standard Python libraries and leveldb. These will usually be
+Megacoin Electrum Server depends on various standard Python libraries and leveldb. These will usually be
 installed by calling `python setup.py install` above. They can be also be installed with your
 package manager if you don't want to use the install routine.
 
@@ -187,7 +187,7 @@ leveldb should be at least version 1.9.0. Earlier version are believed to be bug
 
 ### Step 6. Select your limit
 
-Bitcore Electrum Server uses leveldb to store transactions. You can choose
+Megacoin Electrum Server uses leveldb to store transactions. You can choose
 how many spent transactions per address you want to store on the server.
 The default is 100, but there are also servers with 1000 or even 10000.
 Few addresses have more than 10000 transactions. A limit this high
@@ -268,7 +268,7 @@ When asked for a challenge password just leave it empty and press enter.
     $ openssl x509 -req -days 1825 -in server.csr -signkey server.key -out server.crt
 
 The server.crt file is your certificate suitable for the `ssl_certfile=` parameter and
-server.key corresponds to `ssl_keyfile=` in your Bitcore Electrum Server config.
+server.key corresponds to `ssl_keyfile=` in your Megacoin Electrum Server config.
 
 Starting with Electrum 1.9, the client will learn and locally cache the SSL certificate
 for your server upon the first request to prevent man-in-the middle attacks for all
@@ -279,10 +279,10 @@ your server with a different server name and a new certificate.
 Therefore it's a good idea to make an offline backup copy of your certificate and key
 in case you need to restore them.
 
-### Step 9. Configure Bitcore Electrum Server
+### Step 9. Configure Megacoin Electrum Server
 
 Electrum reads a config file (/etc/electrum.conf) when starting up. This
-file includes the database setup, bitcored RPC setup, and a few other
+file includes the database setup, megacoind RPC setup, and a few other
 options.
 
 The "configure" script listed above will create a config file at /etc/electrum.conf
@@ -293,44 +293,44 @@ If you intend to run the server publicly have a look at README-IRC.md
 
 ### Step 10. Tweak your system for running electrum
 
-Bitcore Electrum Server currently needs quite a few file handles to use leveldb. It also requires
+Megacoin Electrum Server currently needs quite a few file handles to use leveldb. It also requires
 file handles for each connection made to the server. It's good practice to increase the
 open files limit to 128k.
 
 The "configure" script will take care of this and ask you to create a user for running electrum-server.
-If you're using the user `bitcore` to run electrum and have added it as shown in this document, run
+If you're using the user `megacoin` to run electrum and have added it as shown in this document, run
 the following code to add the limits to your /etc/security/limits.conf:
 
-     echo "bitcore hard nofile 131072" >> /etc/security/limits.conf
-     echo "bitcore soft nofile 131072" >> /etc/security/limits.conf
+     echo "megacoin hard nofile 131072" >> /etc/security/limits.conf
+     echo "megacoin soft nofile 131072" >> /etc/security/limits.conf
 
 If you are on Debian > 8.0 Jessie or another distribution based on it, you also need to add these lines in /etc/pam.d/common-session and /etc/pam.d/common-session-noninteractive otherwise the limits in /etc/security/limits.conf will not work:
 
     echo "session required pam_limits.so" >> /etc/pam.d/common-session
     echo "session required pam_limits.so" >> /etc/pam.d/common-session-noninteractive
 
-Check if the limits are changed either by logging with the user configured to run Bitcore Electrum Server as. Example:
+Check if the limits are changed either by logging with the user configured to run Megacoin Electrum Server as. Example:
 
-    su - bitcore
+    su - megacoin
     ulimit -n
 
 Or if you use sudo and the user is added to sudoers group:
 
-    sudo -u bitcore -i ulimit -n
+    sudo -u megacoin -i ulimit -n
 
 
 Two more things for you to consider:
 
 1. To increase privacy of transactions going through your server
-   you may want to close bitcored for incoming connections and connect outbound only. Most servers do run
+   you may want to close megacoind for incoming connections and connect outbound only. Most servers do run
    full nodes with open incoming connections though.
 
-2. Consider restarting bitcored (together with electrum-server) on a weekly basis to clear out unconfirmed
+2. Consider restarting megacoind (together with electrum-server) on a weekly basis to clear out unconfirmed
    transactions from the local the memory pool which did not propagate over the network.
 
-### Step 11. (Finally!) Run Bitcore Electrum Server
+### Step 11. (Finally!) Run Megacoin Electrum Server
 
-The magic moment has come: you can now start your Bitcore Electrum Server as root (it will su to your unprivileged user):
+The magic moment has come: you can now start your Megacoin Electrum Server as root (it will su to your unprivileged user):
 
     # electrum-server start
 
@@ -339,15 +339,15 @@ unprivileged user.
 
 You should see this in the log file:
 
-    starting Bitcore Electrum Server
+    starting Megacoin Electrum Server
 
-If your blockchain database is out of date Bitcore Electrum Server will start updating it. You will see something similar to this in the log file:
+If your blockchain database is out of date Megacoin Electrum Server will start updating it. You will see something similar to this in the log file:
 
     [09/02/2016-09:58:18] block 397319 (1727 197.37s) 0290aae5dc6395e2c60e8b2c9e48a7ee246cad7d0630d17dd5b54d70a41ffed7 (10.13tx/s, 139.78s/block) (eta 11.5 hours, 240 blocks)
     
 The important pieces to you are at the end. In this example, the server has to calculate 240 more blocks, with an ETA of 11.5 hours. Multiple entries will appear below this one as the server catches back up to the latest block. During this time the server will not accept incoming connections from clients or connect to the IRC channel.
 
-If you want to stop Bitcore Electrum Server, use the 'stop' command:
+If you want to stop Megacoin Electrum Server, use the 'stop' command:
 
     # electrum-server stop
 
@@ -359,7 +359,7 @@ safely whenever your machine is rebooted.
     # ln -s `which electrum-server` /etc/init.d/electrum-server
     # update-rc.d electrum-server defaults
 
-### Step 12. Test the Bitcore Electrum Server
+### Step 12. Test the Megacoin Electrum Server
 
 We will assume you have a working Electrum client, a wallet, and some
 transaction history. You should start the client and click on the green
@@ -367,10 +367,10 @@ checkmark (last button on the right of the status bar) to open the Server
 selection window. If your server is public, you should see it in the list
 and you can select it. If you server is private, you need to enter its IP
 or hostname and the port. Press 'Ok' and the client will disconnect from the
-current server and connect to your new Bitcore Electrum Server. You should see your
+current server and connect to your new Megacoin Electrum Server. You should see your
 addresses and transactions history. You can see the number of blocks and
 response time in the server selection window. You should send/receive some
-bitcores to confirm that everything is working properly.
+megacoins to confirm that everything is working properly.
 
 ### Step 13. Join us on IRC, subscribe to the server thread
 
@@ -378,7 +378,7 @@ Say hi to the dev crew, other server operators, and fans on
 irc.freenode.net #electrum and we'll try to congratulate you
 on supporting the community by running an Electrum node.
 
-If you're operating a public Bitcore Electrum Server please subscribe
+If you're operating a public Megacoin Electrum Server please subscribe
 to or regularly check the following thread:
 https://bitcointalk.org/index.php?topic=85475.0
 It'll contain announcements about important updates to Electrum

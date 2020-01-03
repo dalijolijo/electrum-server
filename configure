@@ -111,16 +111,16 @@ fi
 chown $user:$user $logfile
 
 
-bitcored_user=$(read_config "bitcored_user")
-if ! [ "$bitcored_user" ]; then
-    read -p "rpcuser (from your bitcore.conf file, leave empty for localhost): " -r
-    write_config "bitcored_user" $REPLY
+megacoind_user=$(read_config "megacoind_user")
+if ! [ "$megacoind_user" ]; then
+    read -p "rpcuser (from your megacoin.conf file, leave empty for localhost): " -r
+    write_config "megacoind_user" $REPLY
 fi
 
-bitcored_password=$(read_config "bitcored_password")
-if ! [ "$bitcored_password" ]; then
-    read -p "rpcpassword (from your bitcore.conf file, leave emtpy for localhost): " -r
-    write_config "bitcored_password" $REPLY
+megacoind_password=$(read_config "megacoind_password")
+if ! [ "$megacoind_password" ]; then
+    read -p "rpcpassword (from your megacoin.conf file, leave emtpy for localhost): " -r
+    write_config "megacoind_password" $REPLY
 fi
 
 

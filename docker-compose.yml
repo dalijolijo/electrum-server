@@ -1,14 +1,14 @@
 version: '3'
 
 services:
-  bitcored:
+  megacoind:
     build:
-      context: ./docker-bitcored
-      dockerfile: ./Dockerfile.bitcored
-    image: bitcored
-    container_name: bitcored
+      context: ./docker-megacoind
+      dockerfile: ./Dockerfile.megacoind
+    image: megacoind
+    container_name: megacoind
     command:
-      -whitebind=172.21.0.10:8555
+      -whitebind=172.21.0.10:7951
       -whitelist=172.21.0.0/24
       -whitelist=127.0.0.1
       -txindex=1
@@ -16,21 +16,21 @@ services:
       -rpcbind=172.21.0.10
       -rpcallowip=172.21.0.0/24
       -rpcallowip=127.0.0.1
-      -port=8555
-      -rpcport=8556
-      -rpcuser=btx 
-      -rpcpassword=btx
+      -port=7951
+      -rpcport=7952
+      -rpcuser=mec 
+      -rpcpassword=mec
     restart: always
     networks:
       electrum-net:
         ipv4_address: 172.21.0.10
     ports:
-      - 8555:8555 
+      - 7951:7951 
     expose:
-      - 8555
-      - 8556 
+      - 7951
+      - 7952 
     volumes:
-      - /home/bitcore:/data
+      - /home/megacoin:/data
 
   electrum-server:
     build:
@@ -50,9 +50,9 @@ services:
       - 50001 #stratum_tcp_port
       - 50002 #stratum_tcp_ssl_port
    #environment:
-      #- "BITCORE_CONFIG_PATH=/bitcore/bitcore.config.json"
+      #- "BITCORE_CONFIG_PATH=/megacoin/megacoin.config.json"
     depends_on:
-      - bitcored
+      - megacoind
 
 networks:
   electrum-net:

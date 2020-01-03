@@ -243,7 +243,7 @@ class Storage(object):
         print_log("UTXO tree root hash:", hexlify(self.root_hash))
         print_log("Coins in database:", coins)
 
-    # convert between bitcore addresses and 20 bytes keys used for storage.
+    # convert between megacoin addresses and 20 bytes keys used for storage.
     @staticmethod
     def address_to_key(addr):
         return bc_address_to_hash_160(addr)
@@ -283,7 +283,7 @@ class Storage(object):
     def listunspent(self, addr):
         key = self.address_to_key(addr)
         if key is None:
-            raise BaseException('Invalid Bitcore address', addr)
+            raise BaseException('Invalid Megacoin address', addr)
         out = []
         with self.db_utxo.lock:
             for k, v in self.db_utxo.db.iterator(start=key):
@@ -333,8 +333,8 @@ class Storage(object):
             print_log("no undo info for ", height)
         return eval(s)
 
-    def write_undo_info(self, height, bitcored_height, undo_info):
-        if height > bitcored_height - self.reorg_limit or self.test_reorgs:
+    def write_undo_info(self, height, megacoind_height, undo_info):
+        if height > megacoind_height - self.reorg_limit or self.test_reorgs:
             self.db_undo.put(b"undo_info_%d" % (height % self.reorg_limit), repr(undo_info).encode("utf-8"))
 
     @staticmethod

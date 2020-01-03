@@ -80,18 +80,18 @@ class BlockchainProcessor(Processor):
             self.test_reorgs = False
         self.storage = Storage(config, shared, self.test_reorgs)
 
-        self.bitcored_url = 'http://%s:%s/' % (
-            config.get('bitcored', 'bitcored_host'),
-            config.get('bitcored', 'bitcored_port'))
-        bitcored_passwd_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-        bitcored_passwd_mgr.add_password(
+        self.megacoind_url = 'http://%s:%s/' % (
+            config.get('megacoind', 'megacoind_host'),
+            config.get('megacoind', 'megacoind_port'))
+        megacoind_passwd_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+        megacoind_passwd_mgr.add_password(
             None,
-            self.bitcored_url,
-            config.get('bitcored', 'bitcored_user'),
-            config.get('bitcored', 'bitcored_password')
+            self.megacoind_url,
+            config.get('megacoind', 'megacoind_user'),
+            config.get('megacoind', 'megacoind_password')
         )
-        bitcored_auth_handler = urllib.request.HTTPBasicAuthHandler(bitcored_passwd_mgr)
-        self.bitcored_opener = urllib.request.build_opener(bitcored_auth_handler)
+        megacoind_auth_handler = urllib.request.HTTPBasicAuthHandler(megacoind_passwd_mgr)
+        self.megacoind_opener = urllib.request.build_opener(megacoind_auth_handler)
         self.sent_height = 0
         self.sent_header = None
 
@@ -108,7 +108,7 @@ class BlockchainProcessor(Processor):
 
 
     def do_catch_up(self):
-        self.header = self.block2header(self.bitcored('getblock', (self.storage.last_hash,)))
+        self.header = self.block2header(self.megacoind('getblock', (self.storage.last_hash,)))
         self.header['utxo_root'] = hexlify(self.storage.get_root_hash())
         self.catch_up(sync=False)
         if not self.shared.stopped():
@@ -119,7 +119,7 @@ class BlockchainProcessor(Processor):
         while not self.shared.stopped():
             self.main_iteration()
             if self.shared.paused():
-                print_log("bitcored is responding")
+                print_log("megacoind is responding")
                 self.shared.unpause()
             time.sleep(10)
 
@@ -142,7 +142,7 @@ class BlockchainProcessor(Processor):
             msg = "block %d (%d %.2fs) %s" %(self.storage.height, num_tx, delta, hexlify(self.storage.get_root_hash()))
             msg += " (%.2ftx/s, %.2fs/block)" % (tx_per_second, seconds_per_block)
             run_blocks = self.storage.height - self.start_catchup_height
-            remaining_blocks = self.bitcored_height - self.storage.height
+            remaining_blocks = self.megacoind_height - self.storage.height
             if run_blocks>0 and remaining_blocks>0:
                 remaining_minutes = remaining_blocks * seconds_per_block / 60
                 new_blocks = int(remaining_minutes / 10) # number of new blocks expected during catchup
@@ -152,28 +152,28 @@ class BlockchainProcessor(Processor):
                 msg += " (eta %s, %d blocks)" % (rt, remaining_blocks)
             print_log(msg)
 
-    def wait_on_bitcored(self):
+    def wait_on_megacoind(self):
         self.shared.pause()
         time.sleep(10)
         if self.shared.stopped():
             # this will end the thread
             raise BaseException()
 
-    def bitcored(self, method, params=()):
+    def megacoind(self, method, params=()):
         postdata = dumps({"method": method, 'params': params, 'id': 'jsonrpc'})
         while True:
             try:
-                response = self.bitcored_opener.open(self.bitcored_url, postdata.encode("utf-8"))
+                response = self.megacoind_opener.open(self.megacoind_url, postdata.encode("utf-8"))
                 r = load(utf8_reader(response))
                 response.close()
             except:
-                print_log("cannot reach bitcored...")
-                self.wait_on_bitcored()
+                print_log("cannot reach megacoind...")
+                self.wait_on_megacoind()
             else:
                 if r['error'] is not None:
                     if r['error'].get('code') == -28:
-                        print_log("bitcored still warming up...")
-                        self.wait_on_bitcored()
+                        print_log("megacoind still warming up...")
+                        self.wait_on_megacoind()
                         continue
                     raise BaseException(r['error'])
                 break
@@ -192,8 +192,8 @@ class BlockchainProcessor(Processor):
         }
 
     def get_header(self, height):
-        block_hash = self.bitcored('getblockhash', (height,))
-        b = self.bitcored('getblock', (block_hash,))
+        block_hash = self.megacoind('getblockhash', (height,))
+        b = self.megacoind('getblock', (block_hash,))
         return self.block2header(b)
 
     def init_headers(self, db_height):
@@ -294,7 +294,7 @@ class BlockchainProcessor(Processor):
 
     def get_mempool_transaction(self, txid):
         try:
-            raw_tx = self.bitcored('getrawtransaction', (txid, 0))
+            raw_tx = self.megacoind('getrawtransaction', (txid, 0))
         except:
             return None
         vds = deserialize.BCDataStream()
@@ -357,8 +357,8 @@ class BlockchainProcessor(Processor):
         if cache_only:
             return -1
 
-        block_hash = self.bitcored('getblockhash', (height,))
-        b = self.bitcored('getblock', (block_hash,))
+        block_hash = self.megacoind('getblockhash', (height,))
+        b = self.megacoind('getblock', (block_hash,))
         tx_list = b.get('tx')
         tx_pos = tx_list.index(tx_hash)
 
@@ -439,7 +439,7 @@ class BlockchainProcessor(Processor):
 
         # add undo info
         if not revert:
-            self.storage.write_undo_info(block_height, self.bitcored_height, undo_info)
+            self.storage.write_undo_info(block_height, self.megacoind_height, undo_info)
 
         # add the max
         self.storage.save_height(block_hash, block_height)
@@ -572,7 +572,7 @@ class BlockchainProcessor(Processor):
 
         elif method == 'blockchain.transaction.broadcast':
             try:
-                txo = self.bitcored('sendrawtransaction', params)
+                txo = self.megacoind('sendrawtransaction', params)
                 print_log("sent tx:", txo)
                 result = txo
             except BaseException as e:
@@ -582,7 +582,7 @@ class BlockchainProcessor(Processor):
                     #  it's considered an error message
                     message = error["message"]
                     if "non-mandatory-script-verify-flag" in message:
-                        result = "Your client produced a transaction that is not accepted by the Bitcore network any more. Please upgrade to Electrum 2.5.1 or newer\n"
+                        result = "Your client produced a transaction that is not accepted by the Megacoin network any more. Please upgrade to Electrum 2.5.1 or newer\n"
                     else:
                         result = "The transaction was rejected by network rules.(" + message + ")\n" \
                             "[" + params[0] + "]"
@@ -597,11 +597,11 @@ class BlockchainProcessor(Processor):
 
         elif method == 'blockchain.transaction.get':
             tx_hash = params[0]
-            result = self.bitcored('getrawtransaction', (tx_hash, 0))
+            result = self.megacoind('getrawtransaction', (tx_hash, 0))
 
         elif method == 'blockchain.estimatefee':
             num = int(params[0])
-            result = self.bitcored('estimatefee', (num,))
+            result = self.megacoind('estimatefee', (num,))
 
         elif method == 'blockchain.relayfee':
             result = self.relayfee
@@ -613,7 +613,7 @@ class BlockchainProcessor(Processor):
 
 
     def get_block(self, block_hash):
-        block = self.bitcored('getblock', (block_hash,))
+        block = self.megacoind('getblock', (block_hash,))
 
         rawtxreq = []
         i = 0
@@ -628,21 +628,21 @@ class BlockchainProcessor(Processor):
 
         while True:
             try:
-                response = self.bitcored_opener.open(self.bitcored_url, postdata.encode("utf-8"))
+                response = self.megacoind_opener.open(self.megacoind_url, postdata.encode("utf-8"))
                 r = load(utf8_reader(response))
                 response.close()
             except:
-                logger.error("bitcored error (getfullblock)")
-                self.wait_on_bitcored()
+                logger.error("megacoind error (getfullblock)")
+                self.wait_on_megacoind()
                 continue
             try:
                 rawtxdata = []
                 for ir in r:
-                    assert ir['error'] is None, "Error: make sure you run bitcored with txindex=1; use -reindex if needed."
+                    assert ir['error'] is None, "Error: make sure you run megacoind with txindex=1; use -reindex if needed."
                     rawtxdata.append(ir['result'])
             except BaseException as e:
                 logger.error(str(e))
-                self.wait_on_bitcored()
+                self.wait_on_megacoind()
                 continue
 
             block['tx'] = rawtxdata
@@ -658,11 +658,11 @@ class BlockchainProcessor(Processor):
 
         while not self.shared.stopped():
             # are we done yet?
-            info = self.bitcored('getinfo')
+            info = self.megacoind('getinfo')
             self.relayfee = info.get('relayfee')
-            self.bitcored_height = info.get('blocks')
-            bitcored_block_hash = self.bitcored('getblockhash', (self.bitcored_height,))
-            if self.storage.last_hash == bitcored_block_hash:
+            self.megacoind_height = info.get('blocks')
+            megacoind_block_hash = self.megacoind('getblockhash', (self.megacoind_height,))
+            if self.storage.last_hash == megacoind_block_hash:
                 self.up_to_date = True
                 break
 
@@ -673,7 +673,7 @@ class BlockchainProcessor(Processor):
             # not done..
             self.up_to_date = False
             try:
-                next_block_hash = self.bitcored('getblockhash', (self.storage.height + 1,))
+                next_block_hash = self.megacoind('getblockhash', (self.storage.height + 1,))
             except BaseException as e:
                 revert = True
 
@@ -710,7 +710,7 @@ class BlockchainProcessor(Processor):
             # print time
             self.print_time(n)
 
-        self.header = self.block2header(self.bitcored('getblock', (self.storage.last_hash,)))
+        self.header = self.block2header(self.megacoind('getblock', (self.storage.last_hash,)))
         self.header['utxo_root'] = hexlify(self.storage.get_root_hash())
 
         if self.shared.stopped(): 
@@ -720,7 +720,7 @@ class BlockchainProcessor(Processor):
 
     def memorypool_update(self):
         t0 = time.time()
-        mempool_hashes = set(self.bitcored('getrawmempool'))
+        mempool_hashes = set(self.megacoind('getrawmempool'))
         touched_addresses = set()
 
         # get new transactions

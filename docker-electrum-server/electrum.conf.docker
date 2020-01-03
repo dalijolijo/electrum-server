@@ -10,7 +10,7 @@ stratum_tcp_ssl_port = 50002
 #report_host =
 #report_stratum_tcp_port = 50001
 #report_stratum_tcp_ssl_port = 50002
-banner = Welcome to Bitcore Electrum!
+banner = Welcome to Megacoin Electrum!
 banner_file = /etc/electrum.banner
 #irc = no
 #irc_nick = <yournickname>
@@ -26,15 +26,15 @@ path =
 # for each address, history will be pruned if it is longer than this limit
 pruning_limit = 100
 
-# cache sizes in bytes, the default is optimized for ~4 GB RAM setups to run bitcored alongside
+# cache sizes in bytes, the default is optimized for ~4 GB RAM setups to run megacoind alongside
 # If you have lots of RAM increase up to 16 times for best performance
 #hist_cache = 67108864
 #utxo_cache = 134217728
 #addr_cache = 16777216
 
-[bitcored]
-bitcored_host = 172.21.0.10
-bitcored_port = 8556
-# user and password from bitcore.conf (not needed for localhost)
-bitcored_user = btx
-bitcored_password = btx
+[megacoind]
+megacoind_host = 172.21.0.10
+megacoind_port = 7952
+# user and password from megacoin.conf (not needed for localhost)
+megacoind_user = mec
+megacoind_password = mec

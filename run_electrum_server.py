@@ -122,7 +122,7 @@ def create_config(filename=None):
 
     # set network parameters
     config.add_section('network')
-    config.set('network', 'type', 'bitcore_main')
+    config.set('network', 'type', 'megacoin_main')
 
     # try to find the config file in the default paths
     if not filename:
@@ -244,7 +244,7 @@ def start_server(config):
     if ssl_certfile is '' or ssl_keyfile is '':
         stratum_tcp_ssl_port = None
 
-    print_log("Starting Bitcore Electrum Server on", host)
+    print_log("Starting Megacoin Electrum Server on", host)
 
     # Create hub
     dispatcher = Dispatcher(config)
@@ -282,7 +282,7 @@ def stop_server():
     shared.stop()
     server_proc.join()
     chain_proc.join()
-    print_log("Bitcore Electrum Server stopped")
+    print_log("Megacoin Electrum Server stopped")
 
 
 if __name__ == '__main__':

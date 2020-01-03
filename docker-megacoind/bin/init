@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#
+# Configure megacoin.conf
+#
+CONF=${DATA}/megacoin.conf
+
+if [ ! -e "${CONF}" ]; then
+  echo "txindex=1
+listen=1
+server=1
+
+port=7951
+rpcport=7952
+rpcallowip=0.0.0.0/0
+
+rpcuser=mec
+rpcpassword=mec
+
+printtoconsole=1" > "${CONF}"
+fi
+
+#
+# Downloading bootstrap file
+#
+printf "** Downloading bootstrap file ***\n"
+cd ${DATA}
+wget https://megacoin.cc/bootstrap.tar.gz
+tar -xvzf bootstrap.tar.gz
+rm bootstrap.tar.gz
+
+exec megacoind -datadir=${DATA} -conf=${CONF} "$@"

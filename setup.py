@@ -21,10 +21,10 @@ setup(
         'electrumserver.ircthread',
         'electrumserver.stratum_tcp'
     ],
-    description="Bitcore Electrum Server",
+    description="Megacoin Electrum Server",
     author="Thomas Voegtlin",
     author_email="thomasv@electrum.org",
     license="MIT Licence",
     url="https://github.com/spesmilo/electrum-server/",
-    long_description="""Server for the Electrum Lightweight Bitcore Wallet"""
+    long_description="""Server for the Electrum Lightweight Megacoin Wallet"""
 )
