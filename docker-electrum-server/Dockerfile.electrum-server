@@ -20,7 +20,7 @@ WORKDIR /home/electrum
 
 RUN mkdir -p ${DATA}/leveldb
 
-RUN git clone -b python3 https://github.com/dalijolijo/electrum-server.git
+RUN git clone -b mec https://github.com/dalijolijo/electrum-server.git
 
 COPY configure-docker electrum-server/configure
 COPY electrum.conf.docker electrum-server/electrum.conf

@@ -25,7 +25,7 @@ fi
 #
 printf "** Downloading bootstrap file ***\n"
 cd ${DATA}
-wget https://megacoin.cc/bootstrap.tar.gz
+wget https://megacoin.eu/downloads/bootstrap.tar.gz
 tar -xvzf bootstrap.tar.gz
 rm bootstrap.tar.gz
 
