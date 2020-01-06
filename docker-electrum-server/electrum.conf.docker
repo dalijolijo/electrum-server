@@ -2,7 +2,7 @@
 # username for running the daemon
 username = 
 # hostname. set it to a FQDN in order to be reached from outside
-host = localhost
+host = 172.21.0.13
 # ports
 electrum_rpc_port = 8000
 stratum_tcp_port = 50001
