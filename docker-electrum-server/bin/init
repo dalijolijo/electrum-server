@@ -1,8 +1,2 @@
 #!/bin/bash
-
-#
-# Configure bitcore.conf
-#
-CONF=${DATA}/electrum.conf
-
 exec electrum-server start "$@"
