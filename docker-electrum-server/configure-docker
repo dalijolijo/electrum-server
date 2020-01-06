@@ -50,7 +50,7 @@ if ! [ "$path" ]; then
 fi
 
 # read path from config
-default_logfile="/var/log/electrum.log"
+default_logfile="/var/log/electrum-server/electrum_mec.log"
 logfile=$(read_config "logfile")
 if ! [ "$logfile" ]; then
     logfile=$default_logfile

@@ -1,8 +1,2 @@
 #!/bin/bash
-
-#
-# Configure megacoin.conf
-#
-CONF=${DATA}/electrum.conf
-
 exec electrum-server start "$@"
