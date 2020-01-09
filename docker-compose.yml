@@ -36,8 +36,8 @@ services:
     build:
       context: ./docker-electrum-server
       dockerfile: ./Dockerfile.electrum-server
-    image: electrum-server 
-    container_name: electrum-server
+    image: mec-electrum-server 
+    container_name: mec-electrum-server
     restart: always
     networks:
       electrum-net:
