@@ -43,8 +43,9 @@ services:
       electrum-net:
         ipv4_address: 172.21.0.13
     ports:
-      - 50001:50001
-      - 50002:50002
+      - 8000:8000
+      - 0.0.0.0:50001:50001
+      - 0.0.0.0:50002:50002
     expose:
       - 8000 #electrum_rpc_port
       - 50001 #stratum_tcp_port
